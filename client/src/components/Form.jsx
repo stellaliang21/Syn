@@ -2,6 +2,15 @@ import React from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 
+const Info = styled.div`
+  border-style: solid;
+  border-width: 3px;
+  border-color: #4CAF50;
+  width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+`;
+
 const InputForm = styled.form`
   border-style: solid;
   border-width: 3px;
@@ -14,7 +23,7 @@ const InputForm = styled.form`
   height: 250px;
   display: flex;
   flex-direction: column;
-`
+`;
 
 const Inputs = styled.input`
   width: 338px;
@@ -24,7 +33,7 @@ const Inputs = styled.input`
   display: inline-block;
   border: 1px solid #ccc;
   box-sizing: border-box;
-`
+`;
 
 const Submit = styled.input`
   background-color: #4CAF50; 
@@ -35,7 +44,7 @@ const Submit = styled.input`
   margin-left: auto;
   margin-right: auto;
   font-size: 16px;
-`
+`;
 
 const Button = styled.button`
   background-color: #4CAF50; 
@@ -46,7 +55,7 @@ const Button = styled.button`
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
-`
+`;
 
 class Form extends React.Component{
   constructor(props) {
@@ -62,6 +71,7 @@ class Form extends React.Component{
       nickname: '',
       node_id: '',
       withdrawals_remaining: 0,
+      oauth_key: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmitCreateUser = this.handleSubmitCreateUser.bind(this);
@@ -69,6 +79,8 @@ class Form extends React.Component{
     this.createUser = this.createUser.bind(this);
     this.oauth = this.oauth.bind(this);
     this.createIBAccount = this.createIBAccount.bind(this);
+    this.createAnotherUser = this.createAnotherUser.bind(this);
+    this.createAnotherIbAcc = this.createAnotherIbAcc.bind(this);
   }
 
   handleChange(e) {
@@ -96,19 +108,27 @@ class Form extends React.Component{
       });
     })
     .catch(error => {
-      console.log(error)
+      console.log(error);
+      this.setState({
+        user_created: 'error'
+      });
     });
   }
 
   oauth() {
-    const { id, refresh_token } = this.state;
+    const { id, refresh_token, oauth_key } = this.state;
 
     axios.get (`/api/oauth/${id}/${refresh_token}`)
     .then(response => {
-      console.log(response);
+      this.setState({
+        oauth_key: !oauth_key
+      });
     })
     .catch(error => {
       console.log(error);
+      this.setState({
+        oauth_key: 'error'
+      });
     });
   }
 
@@ -125,7 +145,22 @@ class Form extends React.Component{
       });
     })
     .catch(error => {
-      console.log(error)
+      console.log(error);
+      this.setState({
+        ib_account_created: 'error'
+      });
+    });
+  }
+
+  createAnotherUser() {
+    this.setState({
+      user_created: false
+    });
+  }
+
+  createAnotherIbAcc() {
+    this.setState({
+      ib_account_created: false
     });
   }
 
@@ -140,7 +175,7 @@ class Form extends React.Component{
   }
   
   render() {
-    const { user_created, ib_account_created }  = this.state;
+    const { user_created, ib_account_created, oauth_key }  = this.state;
 
     let accountDetail;
 
@@ -150,35 +185,54 @@ class Form extends React.Component{
           <InputForm onSubmit={e => this.handleSubmitCreateUser(e)}>
             <label>
               Full Name:
-              <Inputs type="text" name="legal_names" onChange={this.handleChange} placeholder={'Full Name'} />
+              <Inputs 
+                type="text" 
+                name="legal_names" 
+                onChange={this.handleChange} 
+                placeholder={'Full Name'} 
+              />
             </label>
             <label>
               Email:
-              <Inputs type="text" name="email" onChange={this.handleChange} placeholder={'Email'} />
+              <Inputs 
+                type="text" 
+                name="email" 
+                onChange={this.handleChange} 
+                placeholder={'Email'} 
+              />
             </label>
             <label>
               Phone Number:
-              <Inputs type="text" name="phone_numbers" onChange={this.handleChange} placeholder={'Phone Number'} />
+              <Inputs 
+                type="text" 
+                name="phone_numbers" 
+                onChange={this.handleChange} 
+                placeholder={'Phone Number'} 
+              />
             </label>
-            <Submit type="submit" value="Submit" />
+            <Submit 
+              type="submit" 
+              value="Submit" 
+            />
           </InputForm>
         </div>
     } else if ( ib_account_created === true && user_created === true) {
       accountDetail =
-      <InputForm>
-        <div>Account Created! Please use this information to add funds to your account! </div>
+      <Info>
+        <div>
+          Account Created! Please use this information to add funds to your account! 
+        </div>
         <div>
           User ID: {this.state.id}
         </div>
         <div>
           IB Account ID: {this.state.node_id}
         </div>
-      </InputForm>
-    } else if (user_created === true) {
+      </Info>
+    } else if (user_created === true ) {
       accountDetail = 
         <div>
-
-          <InputForm>
+          <Info>
             <div>
               congratulations on creating an user account!
             </div>
@@ -188,15 +242,53 @@ class Form extends React.Component{
             <form onSubmit={e => this.handleSubmitIBAccount(e)}>
               <label>
                   nickname:
-                  <Inputs type="text" name="nickname" onChange={this.handleChange} placeholder={'nickname'} />
+                  <Inputs 
+                    type="text" 
+                    name="nickname" 
+                    onChange={this.handleChange} 
+                    placeholder={'nickname'} 
+                  />
               </label>
               <Submit type="submit" value="Submit" />
             </form>
-          </InputForm>  
+          </Info>  
           <Button onClick={this.oauth}>
             oauth
           </Button>
         </div>
+    } else if (user_created === 'error') {
+      accountDetail =
+        <Info>
+          <h2>
+            Error, Please try again
+          </h2>
+          <Button onClick={this.createAnotherUser}>
+            Create User
+          </Button>
+        </Info>
+    } else if (ib_account_created === 'error') {
+      accountDetail =
+      <Info>
+        <h2>
+          Error, Please try again
+        </h2>
+        <Button onClick={this.createAnotherIbAcc}>
+          Create IB Account
+        </Button>
+      </Info>
+    }
+
+    let oauth;
+
+    if (oauth_key === true) {
+      oauth =
+      <div>
+        success!
+      </div>
+    } else if (oauth_key === 'error') {
+      <div>
+        Error, Please try again
+      </div>
     }
 
     return (
@@ -205,6 +297,7 @@ class Form extends React.Component{
           Create User
         </h1>
         {accountDetail}
+        {oauth}
       </div>
     );
   }
