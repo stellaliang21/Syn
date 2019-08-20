@@ -1,5 +1,8 @@
 # SynBank
 
+## Heroku
+https://synbank.herokuapp.com/
+
 ## Installing and Running
 1. Clone the repository `git clone https://github.com/stellaliang21/SynBank.git`
 2. Install dependencies `npm install`
@@ -12,3 +15,4 @@
 3. Express.js
 4. Synapse Interest Bearings Accounts API
 5. Heroku
+
