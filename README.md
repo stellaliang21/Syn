@@ -15,4 +15,6 @@ https://synbank.herokuapp.com/
 3. Express.js
 4. Synapse Interest Bearings Accounts API
 5. Heroku
+6. styled-components
+
 
