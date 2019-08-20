@@ -34,7 +34,6 @@ const createUser = (req, res) => {
 
 const createOauth = (req, res) => {
   const user_id = req.params.user_id; 
-  const nickname = req.body.nickname;
 
   client
     .getUser(user_id)
@@ -44,7 +43,7 @@ const createOauth = (req, res) => {
           {
             type: 'IB-DEPOSIT-US',
             info: {
-              nickname: nickname,
+              nickname: 'oauth',
             }
           }
         )
