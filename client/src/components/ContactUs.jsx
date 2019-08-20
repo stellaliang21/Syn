@@ -19,8 +19,6 @@ const ContactUs = () => {
         <br/>
         We will try to get back to you as soon as possible 
         <br/>
-        If you have an questions or concerns, don't hesitate to reach out!
-        <br/>
         Our operating hours are from 9 AM to 5 PM Monday - Friday
         <br/>
         Email: help@synbank.com
